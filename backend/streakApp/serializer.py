@@ -7,7 +7,7 @@ class StreakSerializer(serializers.ModelSerializer):
         model = Streak
         fields = [
             'idStreak',
-            'idHbitFk',
+            'idHabitFk',
             'streakStartDate',
             'streakNextDate',
         ]
@@ -16,7 +16,7 @@ class StreakSerializer(serializers.ModelSerializer):
         streak = Streak.objects.get(idStreak = obj.idStreak)
         return {
                 'idStreak':streak.idStreak,
-                'idHbitFk':streak.idHbitFk.idHabit,
+                'idHabitFk':streak.idHabitFk.idHabit,
                 'streakStartDate': streak.streakStartDate,
                 'streakLastCheckOffDate': streak.streakLastCheckOffDate,
                 'streakNextDate': streak.streakNextDate,

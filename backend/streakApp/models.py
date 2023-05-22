@@ -4,18 +4,18 @@ from habitApp.models import Habit
 '''model for streak'''
 class Streak(models.Model):
     idStreak = models.BigAutoField(primary_key=True)
-    idHbitFk = models.ForeignKey(Habit, related_name = 'streak', on_delete = models.CASCADE, null=False)
+    idHabitFk = models.ForeignKey(Habit, related_name = 'streak', on_delete = models.CASCADE, null=False)
     '''date when the streak was created'''
     streakStartDate = models.DateTimeField()
-    '''date when the streak was checked on time'''
+    '''last date when the streak was checked off on time'''
     streakLastCheckOffDate = models.DateTimeField(null=True)
-    '''date for next check'''
+    '''date for next check off'''
     streakNextDate = models.DateTimeField()
-    '''date when the streak was closed'''
+    '''date when the streak was complete'''
     streakLastDate = models.DateTimeField(null=True)
     '''check off count'''
     streakCheckOff = models.IntegerField(default=0)
-    streakStatus = models.BooleanField(default=True)
+    streakStatus = models.BooleanField(default=False)
 
     def set_streakLastCheckOffDate(self, date):
         self.streakLastCheckOffDate = date

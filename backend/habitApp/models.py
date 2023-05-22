@@ -7,10 +7,12 @@ class Habit(models.Model):
     idUserFk = models.ForeignKey(User, related_name = 'habit', on_delete = models.CASCADE, null=False)
     habitDescription = models.CharField('Description', max_length= 256)
     habitPeriodicity = models.IntegerField()
-    habitStatus = models.BooleanField(default=True)
+    habitStatus = models.BooleanField(default=False)
 
+    '''return the idHabit as an int'''
     def get_id(self):
         return self.idHabit
     
+    '''set the habitStatus according to the input'''
     def set_habitStatus(self, status):
         self.habitStatus=status

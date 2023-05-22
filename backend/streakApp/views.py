@@ -11,15 +11,7 @@ from habitApp.models import Habit
 from streakApp.models import Streak
 from streakApp.serializer import StreakSerializer
 
-'''create a streak'''
-class StreakCreateView(generics.CreateAPIView):
-    queryset = Streak.objects.all()
-    serializer_class = StreakSerializer
-
-    def perform_create(self, serializer):
-        return super().perform_create(serializer)
-
-'''check off the current streak active for the habit'''
+'''check off the current streak for the habit'''
 @api_view(['PUT'])
 def streak_check_off(request, pk=None, *args, **kwargs):
     method = request.method
@@ -29,18 +21,30 @@ def streak_check_off(request, pk=None, *args, **kwargs):
             dataHabit = get_object_or_404(Habit, pk=pk)
 
             try:
-                currentStreak = Streak.objects.get(idHbitFk=dataHabit.idHabit, streakStatus=True)
-                currentStreak.set_streakLastCheckOffDate(datetime.today())
-                currentStreak.set_streakNextDate(datetime.today()+ timedelta(days=dataHabit.habitPeriodicity))
-                currentStreak.set_streakCheckOff()
-                currentStreak.save()
+                currentStreak = Streak.objects.get(idHabitFk=dataHabit.idHabit, streakStatus=False)
 
-                return Response("CheckOff complete")
+                if currentStreak.streakNextDate.date() >= datetime.now().date():
+
+                    currentStreak.set_streakLastCheckOffDate(datetime.today())
+                    currentStreak.set_streakNextDate(datetime.today()+ timedelta(days=dataHabit.habitPeriodicity))
+                    currentStreak.set_streakCheckOff()
+                    currentStreak.save()
+
+                    return Response("CheckOff complete")
+                
+                else:
+                    dataHabit.set_habitStatus(True)
+                    currentStreak.set_streakLastDate(datetime.now())
+                    currentStreak.set_streakStatus(True)
+                    dataHabit.save()
+                    currentStreak.save()
+
+                    return Response("The habit was missed")
             
             except:
                 return Response("No active Streak")
 
-'''return the strak with the longest run for any habit'''    
+'''return the streak with the longest run for any habit'''    
 @api_view(['GET'])
 def streak_longest_run(request, *args, **kwargs):
     method = request.method
@@ -55,14 +59,14 @@ def streak_longest_run(request, *args, **kwargs):
                 resultStreak = StreakSerializer(streakIn).data
         return Response(resultStreak)
 
-'''return the strak with the longest run for a specific habit''' 
+'''return the streak with the longest run for a specific habit''' 
 @api_view(['GET'])
 def streak_longest_run_specific(request, pk=None, *args, **kwargs):
     method = request.method
 
     if method == 'GET':
         if pk != None:
-            queryset = list(Streak.objects.filter(idHbitFk=pk))
+            queryset = list(Streak.objects.filter(idHabitFk=pk))
             longest = 0
             resultStreak = {}
             for streakIn in queryset:

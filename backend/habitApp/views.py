@@ -15,6 +15,7 @@ from habitApp.serializer import HabitSerializer
 def habit_create(request, pk=None, *args, **kwargs):
     method = request.method
     dataReturn = {}
+    data ={}
 
     if method == "POST":
         serializer = HabitSerializer(data=request.data)
@@ -28,18 +29,20 @@ def habit_create(request, pk=None, *args, **kwargs):
 
         if dataReturn != None:
             finalData = {}
-            finalData["idHbitFk"]=Habit.objects.get(idHabit=dataReturn["idHabit"]).idHabit
+            finalData["idHabitFk"]=Habit.objects.get(idHabit=dataReturn["idHabit"]).idHabit
             finalData["streakStartDate"]=str(datetime.today())
             finalData["streakNextDate"]=str(datetime.today()+ timedelta(days=habitPeriodicity))
             serializer = StreakSerializer(data=finalData)
 
             if serializer.is_valid(raise_exception=True):
-                idHbitFk = serializer.validated_data.get("idHbitFk")
+                idHabitFk = serializer.validated_data.get("idHabitFk")
                 streakStartDate = serializer.validated_data.get("streakStartDate")
                 streakNextDate = serializer.validated_data.get("streakNextDate")
-                serializer.save(idHbitFk=idHbitFk,streakStartDate=streakStartDate,streakNextDate=streakNextDate)
+                serializer.save(idHabitFk=idHabitFk,streakStartDate=streakStartDate,streakNextDate=streakNextDate)
+                data["idHabit"]=idHabitFk.get_id()
+                data["idStreak"]=serializer.data["idStreak"]
 
-                return Response("Habit ID: "+str(idHbitFk.get_id())+" "+"Streak ID: "+str(serializer.data["idStreak"]))
+                return Response(data)
 
 '''Marks as complete or "status = false" for both the streak and the habit and adds the final dates for "streakLastDate'''
 @api_view(['PUT'])
@@ -51,10 +54,10 @@ def habit_complete_status(request, pk=None, *args, **kwargs):
             dataHabit = get_object_or_404(Habit, pk=pk)
 
             try:
-                dataStreak = Streak.objects.get(idHbitFk=dataHabit.idHabit,streakStatus = True)
-                dataHabit.set_habitStatus(False)
+                dataStreak = Streak.objects.get(idHabitFk=dataHabit.idHabit,streakStatus = False)
+                dataHabit.set_habitStatus(True)
                 dataStreak.set_streakLastDate(datetime.now())
-                dataStreak.set_streakStatus(False)
+                dataStreak.set_streakStatus(True)
                 dataHabit.save()
                 dataStreak.save()
                 return Response("The habit is complete")
@@ -69,34 +72,47 @@ def habit_reactivate_status(request, pk=None, *args, **kwargs):
     if method == "PUT":
         if pk is not None:
             dataHabit = get_object_or_404(Habit, pk=pk)
-            dataHabit.set_habitStatus(True)
-            dataHabit.save()
             
-            if dataHabit != None:
+            if dataHabit != None and dataHabit.habitStatus != False:
                 finalData = {}
-                finalData["idHbitFk"]=Habit.objects.get(idHabit=dataHabit.idHabit).idHabit
+                dataHabit.set_habitStatus(False)
+                dataHabit.save()
+                finalData["idHabitFk"]=Habit.objects.get(idHabit=dataHabit.idHabit).idHabit
                 finalData["streakStartDate"]=str(datetime.today())
                 finalData["streakNextDate"]=str(datetime.today()+ timedelta(days=dataHabit.habitPeriodicity))
                 serializer = StreakSerializer(data=finalData)
 
                 if serializer.is_valid(raise_exception=True):
-                    idHbitFk = serializer.validated_data.get("idHbitFk")
+                    idHabitFk = serializer.validated_data.get("idHabitFk")
                     streakStartDate = serializer.validated_data.get("streakStartDate")
                     streakNextDate = serializer.validated_data.get("streakNextDate")
-                    serializer.save(idHbitFk=idHbitFk,streakStartDate=streakStartDate,streakNextDate=streakNextDate)
+                    serializer.save(idHabitFk=idHabitFk,streakStartDate=streakStartDate,streakNextDate=streakNextDate)
 
                     return Response("Habit ID: "+str(dataHabit.idHabit)+" "+"Streak ID: "+str(serializer.data["idStreak"]))
 
 
-            return Response("Complete")
+            return Response("It is already active")
     
-'''return the details of a given habit by a PK'''
-class HabitDetailView(generics.ListAPIView):
-    queryset = Habit.objects.all()
-    serializer_class = HabitSerializer
+'''return the details of a given habit by a PK'''    
+@api_view(['GET'])
+def detail_full_view(request, pk=None, *args,**kwargs):
+    method = request.method
 
-    def get(self, request, *args, **kwargs):
-        return super().get(request, *args, **kwargs) 
+    if method == "GET":
+
+        if pk is not None:
+            data={}
+            detail_habit = get_object_or_404(Habit, pk=pk)
+            data["Habit"] = HabitSerializer(detail_habit, many=False).data
+
+            if detail_habit.habitStatus != True:
+                detail_streak = Streak.objects.get(idHabitFk=detail_habit.idHabit,streakStatus = False)
+        
+                data["Streak"]=StreakSerializer(detail_streak,many=False).data
+                
+                return Response(data)
+            else:
+                return Response(data)
     
 '''return a list of all habits'''
 class HabitListView(generics.ListAPIView):

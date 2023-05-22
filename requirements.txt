@@ -3,3 +3,5 @@ djangorestframework
 djangorestframework-simplejwt
 requests
 django-cors-headers
+pytest
+questionary
