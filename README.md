@@ -10,23 +10,25 @@ This project focuses in the development of an app for habits. It allows to creat
 
 The django project has four main parts which are "habitProject", "habitApp", "streakApp" and "userApp":
 
-## Installation
+## Activation of VENV
 
-Please create a virtual enviroment using python 3.10 as it was the version used to developed the app and then:
-
-```shell
-pip install -r requirements.txt
-```
-
-## Activation
-
-Once the virtual enviroment is created, please go to root where it is such as "OOFP\"the name of the venv"\ to activate the virtual enviroment:
+Please create a virtual enviroment using python 3.10 as it was the version used to developed the app. Once the virtual enviroment is created, please go to root where it is such as ...OOFP\ the name of the venv \ to activate the virtual enviroment:
 
 ```shell
 Scripts\activate
 ```
 
-then, please go to the root "...OOFP\backend\" to activate the django project
+## Installation
+
+With the VENV activatate, please go to the root "...OOFP\backend\" and install the requirments:
+
+```shell
+pip install -r requirements.txt
+```
+
+## Activation of Django project
+
+Please go to the root "...OOFP\backend\" to activate the django project
 
 ```shell
 python manage.py runserver 
