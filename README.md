@@ -4,7 +4,7 @@ This is an app using django framework for creating, tracking and managing habits
 
 ## What is it?
 
-This project focuses in the development of an app for habits. It allows to create, check off and complete habits with different periodicities. Additionally, it has a module that allows to analyze data from the current habits to provide an indeep view. 
+This project focuses in the development of an app for habits. It allows to create, check off and complete habits with different periodicities. Additionally, it has a module that allows to analyze data from the current habits to provide an in deep view. 
 
 ## Structure
 
@@ -34,7 +34,7 @@ python manage.py runserver
 
 ## Testing
 
-Before using the CLI, please launch the testing enviroment as it uses the data from the predefined habits to test the function indeep. The command "pytest" should be used from the root "...OOFP\backend\"
+Before using the CLI, please launch the testing enviroment as it uses the data from the predefined habits to test the function in deep. The command "pytest" should be used from the root "...OOFP\backend\"
 
 ```shell
 pytest -v
