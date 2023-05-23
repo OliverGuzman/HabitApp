@@ -38,6 +38,7 @@ def cli():
                         count+=1
                     
                     elif count ==3:
+                        print("Not a valid habit description as it cannot be empty...")
                         print("Too many attempts, thanks for using the HabitApp")
                         return None      
 
@@ -54,6 +55,7 @@ def cli():
                         count+=1
                     
                     elif count ==3:
+                        print("Not a valid habit description as it cannot be empty...")
                         print("Too many attempts, thanks for using the HabitApp")
                         return None 
                     
